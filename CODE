@@ -1,0 +1,58 @@
+//RECOMMENDER APP JAVA.
+import org.apache.mahout.cf.taste.model.DataModel;
+import org.apache.mahout.cf.taste.impl.model.file.FileDataModel;
+import org.apache.mahout.cf.taste.impl.neighborhood.NearestNUserNeighborhood;
+import org.apache.mahout.cf.taste.impl.similarity.PearsonCorrelationSimilarity;
+import org.apache.mahout.cf.taste.neighborhood.UserNeighborhood;
+import org.apache.mahout.cf.taste.similarity.UserSimilarity;
+import org.apache.mahout.cf.taste.impl.recommender.GenericUserBasedRecommender;
+import org.apache.mahout.cf.taste.recommender.Recommender;
+import org.apache.mahout.cf.taste.recommender.RecommendedItem;
+
+import java.io.File;
+import java.util.List;
+
+public class RecommenderApp {
+    public static void main(String[] args) {
+        try {
+            DataModel model = new FileDataModel(new File("data.csv"));
+            UserSimilarity similarity = new PearsonCorrelationSimilarity(model);
+            UserNeighborhood neighborhood = new NearestNUserNeighborhood(2, similarity, model);
+            Recommender recommender = new GenericUserBasedRecommender(model, neighborhood, similarity);
+
+            List<RecommendedItem> recommendations = recommender.recommend(1, 3);
+            for (RecommendedItem recommendation : recommendations) {
+                System.out.println("Recommended item ID: " + recommendation.getItemID() +
+                                   " with value: " + recommendation.getValue());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+//DATA.CSV
+
+1,101,5.0
+1,102,3.5
+2,101,2.0
+2,103,4.5
+3,102,4.0
+//POM.XML
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.recommendation</groupId>
+  <artifactId>AIRecommendationSystem</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.mahout</groupId>
+      <artifactId>mahout-core</artifactId>
+      <version>0.9</version>
+    </dependency>
+  </dependencies>
+</project>
+
